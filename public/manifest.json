@@ -1,0 +1,10 @@
+{
+  "name": "spinwait",
+  "short_name": "spinwait",
+  "description": "Haptic fidget for vibe coders",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05050A",
+  "theme_color": "#05050A",
+  "orientation": "portrait"
+}
