@@ -1,6 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { DaemonState, formatFlux } from "@/lib/daemon";
+import { decodeGenome, getHue } from "@/lib/genome";
+
+const FALLBACK_HUE = 200;
+function hueFromState(state: DaemonState): number {
+  if (!state.genome) return FALLBACK_HUE;
+  try { return getHue(decodeGenome(state.genome)); } catch { return FALLBACK_HUE; }
+}
 
 interface Props {
   state: DaemonState;
@@ -9,6 +16,7 @@ interface Props {
 
 export default function DreamWake({ state, onDismiss }: Props) {
   const [phase, setPhase] = useState<"dream" | "shard" | "ready">("dream");
+  const hue = hueFromState(state);
 
   useEffect(() => {
     const t1 = setTimeout(() => {
@@ -30,10 +38,10 @@ export default function DreamWake({ state, onDismiss }: Props) {
     >
       {phase === "dream" && (
         <div className="text-center animate-fade-in">
-          <div className="text-6xl mb-6" style={{ filter: `hue-rotate(${state.hue - 180}deg)` }}>
+          <div className="text-6xl mb-6" style={{ filter: `hue-rotate(${hue - 180}deg)` }}>
             ◉
           </div>
-          <p className="font-mono text-xs tracking-widest mb-2" style={{ color: `hsl(${state.hue}, 70%, 60%)` }}>
+          <p className="font-mono text-xs tracking-widest mb-2" style={{ color: `hsl(${hue}, 70%, 60%)` }}>
             daemon waking
           </p>
           <p className="font-mono text-[10px] text-gray-600 tracking-widest">dreamed while you were gone</p>
@@ -48,7 +56,7 @@ export default function DreamWake({ state, onDismiss }: Props) {
               filter: state.pendingShard.rarity === "legendary"
                 ? "drop-shadow(0 0 12px gold)"
                 : state.pendingShard.rarity === "rare"
-                ? `drop-shadow(0 0 8px hsl(${state.hue}, 100%, 60%))`
+                ? `drop-shadow(0 0 8px hsl(${hue}, 100%, 60%))`
                 : "none",
             }}
           >
@@ -60,7 +68,7 @@ export default function DreamWake({ state, onDismiss }: Props) {
               color: state.pendingShard.rarity === "legendary"
                 ? "#ffcc00"
                 : state.pendingShard.rarity === "rare"
-                ? `hsl(${state.hue}, 80%, 65%)`
+                ? `hsl(${hue}, 80%, 65%)`
                 : "#888",
             }}
           >
@@ -76,7 +84,7 @@ export default function DreamWake({ state, onDismiss }: Props) {
         <div className="text-center animate-fade-in px-8">
           <div
             className="font-mono text-3xl font-bold mb-3 tracking-widest"
-            style={{ color: `hsl(${state.hue}, 80%, 65%)` }}
+            style={{ color: `hsl(${hue}, 80%, 65%)` }}
           >
             +{formatFlux(state.dreamFluxPending)} flux
           </div>
@@ -84,7 +92,7 @@ export default function DreamWake({ state, onDismiss }: Props) {
             accumulated while agent slept
           </p>
           {state.pendingShard && (
-            <p className="font-mono text-[10px] tracking-widest mb-6" style={{ color: `hsl(${state.hue}, 60%, 55%)` }}>
+            <p className="font-mono text-[10px] tracking-widest mb-6" style={{ color: `hsl(${hue}, 60%, 55%)` }}>
               + {state.pendingShard.name} collected
             </p>
           )}
@@ -93,9 +101,9 @@ export default function DreamWake({ state, onDismiss }: Props) {
             onClick={onDismiss}
             className="font-mono text-xs tracking-widest px-6 py-2.5 rounded-xl"
             style={{
-              background: `hsl(${state.hue}, 60%, 12%)`,
-              border: `1px solid hsl(${state.hue}, 60%, 30%)`,
-              color: `hsl(${state.hue}, 70%, 65%)`,
+              background: `hsl(${hue}, 60%, 12%)`,
+              border: `1px solid hsl(${hue}, 60%, 30%)`,
+              color: `hsl(${hue}, 70%, 65%)`,
             }}
           >
             collect ↓

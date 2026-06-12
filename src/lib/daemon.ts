@@ -24,7 +24,7 @@ export interface ShelfEntry {
   traits: DaemonTraits;
   resonanceGrade: string;
   shippedAt: number;
-  hue: number; // 0-360, unique per daemon
+  genome: string; // 24-char hex
 }
 
 export interface DaemonState {
@@ -67,7 +67,7 @@ export interface DaemonState {
   shelf: ShelfEntry[];
 
   // Visual
-  hue: number; // base hue for this generation
+  genome: string; // 24-char hex — empty until birth sequence completes
   hatched: boolean; // has the egg ever been cracked?
 
   // Resonance grade cached
@@ -146,12 +146,6 @@ function gradeForRatio(ratio: number): string {
   return "F";
 }
 
-function randomHue(): number {
-  // Avoid boring hues near red/orange — pick from cool/alien palette
-  const hues = [180, 200, 220, 260, 280, 150, 170];
-  return hues[Math.floor(Math.random() * hues.length)] + Math.random() * 20 - 10;
-}
-
 export function defaultState(): DaemonState {
   return {
     version: 1,
@@ -176,7 +170,7 @@ export function defaultState(): DaemonState {
     pendingShard: null,
     shards: [],
     shelf: [],
-    hue: randomHue(),
+    genome: "",
     hatched: false,
     resonanceGrade: "F",
   };
@@ -374,7 +368,7 @@ export function shipDaemon(s: DaemonState): DaemonState {
     },
     resonanceGrade: s.resonanceGrade,
     shippedAt: Date.now(),
-    hue: s.hue,
+    genome: s.genome,
   };
 
   const generation = s.generation + 1;
@@ -386,7 +380,7 @@ export function shipDaemon(s: DaemonState): DaemonState {
     lineageMultiplier,
     shelf: [...s.shelf, entry],
     shards: s.shards, // keep shards across generations
-    hue: randomHue(),
+    genome: "",       // cleared — new birth sequence required
     hatched: false,
     lastCloseTime: Date.now(),
   };

@@ -69,6 +69,10 @@ export function useDaemon() {
     update(shipDaemon);
   }, [update]);
 
+  const setGenome = useCallback((genome: string) => {
+    update(s => ({ ...s, genome, hatched: true, stage: "egg" }));
+  }, [update]);
+
   // Save lastCloseTime on unmount/blur
   useEffect(() => {
     const onBlur = () => {
@@ -94,5 +98,6 @@ export function useDaemon() {
     dismissDream,
     recordCharge,
     ship,
+    setGenome,
   };
 }
